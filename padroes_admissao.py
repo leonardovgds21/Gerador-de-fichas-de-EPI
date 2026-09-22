@@ -19,7 +19,11 @@ import re
 import unicodedata
 import openpyxl
 
-PASTA_DO_PROJETO = os.path.dirname(os.path.abspath(__file__))
+from caminhos import obter_pasta_base
+
+# Pasta base do sistema: pasta do projeto ao rodar como script, ou pasta do
+# .exe ao rodar como executável gerado pelo PyInstaller (veja caminhos.py).
+PASTA_DO_PROJETO = obter_pasta_base()
 PASTA_MODELOS_CLIENTE = os.path.join(PASTA_DO_PROJETO, "modelos_x_cliente")
 
 # Texto do cabeçalho da coluna de itens nas planilhas de cliente. É usado

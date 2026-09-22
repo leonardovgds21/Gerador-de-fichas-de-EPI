@@ -14,17 +14,20 @@ sem precisar alterar o código.
 import os
 import openpyxl
 
-# Caminho absoluto do arquivo de equipamentos, localizado na pasta raiz do
-# projeto (mesma pasta deste arquivo .py).
+from caminhos import obter_pasta_base
+
+# Caminho absoluto do arquivo de equipamentos, localizado na pasta base do
+# sistema (veja caminhos.py: a pasta do projeto ao rodar como script, ou a
+# pasta do .exe ao rodar como executável).
 #
-# Importante: usamos o caminho absoluto baseado na localização deste arquivo
-# (e não um caminho relativo simples, como "equipamentos.xlsx") porque o
-# diretório de trabalho ("cwd") do Python pode ser diferente da pasta do
-# projeto dependendo de como o programa é executado (ex.: ao rodar pelo
-# botão "Run" do VSCode, pelo depurador, ou a partir de um atalho). Um
-# caminho relativo simples falharia silenciosamente nesses casos, fazendo a
-# lista de equipamentos aparecer vazia na interface.
-PASTA_DO_PROJETO = os.path.dirname(os.path.abspath(__file__))
+# Importante: usamos um caminho absoluto (e não um caminho relativo simples,
+# como "equipamentos.xlsx") porque o diretório de trabalho ("cwd") do Python
+# pode ser diferente dependendo de como o programa é executado (ex.: pelo
+# botão "Run" do VSCode, pelo depurador, a partir de um atalho, ou como .exe
+# gerado pelo PyInstaller). Um caminho relativo simples falharia
+# silenciosamente nesses casos, fazendo a lista de equipamentos aparecer
+# vazia na interface.
+PASTA_DO_PROJETO = obter_pasta_base()
 ARQUIVO_EQUIPAMENTOS = os.path.join(PASTA_DO_PROJETO, "equipamentos.xlsx")
 
 

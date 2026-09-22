@@ -22,10 +22,13 @@ import tempfile
 import datetime
 import openpyxl
 
-# Caminho absoluto do modelo de ficha, dentro da pasta raiz do projeto (mesma
-# pasta deste arquivo .py) — evita depender do diretório de trabalho de onde
-# o programa foi executado (mesmo problema já corrigido em equipamentos.py).
-PASTA_DO_PROJETO = os.path.dirname(os.path.abspath(__file__))
+from caminhos import obter_pasta_base
+
+# Caminho absoluto do modelo de ficha, dentro da pasta base do sistema (pasta
+# do projeto ao rodar como script, ou pasta do .exe ao rodar como executável
+# — veja caminhos.py). Evita depender do diretório de trabalho de onde o
+# programa foi executado (mesmo problema já corrigido em equipamentos.py).
+PASTA_DO_PROJETO = obter_pasta_base()
 ARQUIVO_MODELO_FICHA = os.path.join(PASTA_DO_PROJETO, "modelo_ficha_epi.xlsx")
 
 NOME_ABA = "Ficha FRENTE"

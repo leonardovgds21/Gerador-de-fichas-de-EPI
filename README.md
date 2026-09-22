@@ -25,6 +25,7 @@ acontece sempre em uma cópia temporária, que é convertida em PDF e descartada
 | Arquivo / pasta              | Para que serve |
 |-------------------------------|----------------|
 | `main.py`                     | Ponto de entrada do sistema — é o arquivo que você executa. Contém toda a interface gráfica. |
+| `caminhos.py`                 | Módulo utilitário que descobre onde procurar os arquivos de dados (`equipamentos.xlsx`, `modelo_ficha_epi.xlsx`, `modelos_x_cliente/`) — tanto rodando como script quanto rodando como `.exe`. |
 | `equipamentos.py`             | Lê a planilha `equipamentos.xlsx` e monta a lista de equipamentos disponíveis (com seus CAs). |
 | `equipamentos.xlsx`           | Base de dados de equipamentos: coluna A = nome do equipamento, coluna B = CA. |
 | `padroes_admissao.py`         | Lê os arquivos da pasta `modelos_x_cliente/` para montar a lista de itens automaticamente quando um "Padrão Admissão" é selecionado. |
