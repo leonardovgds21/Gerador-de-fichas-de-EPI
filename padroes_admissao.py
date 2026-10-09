@@ -5,8 +5,8 @@ Módulo responsável por:
     1. Listar os "padrões de admissão" disponíveis: um por arquivo .xlsx
        dentro da pasta modelos_x_cliente (pasta raiz do projeto), usando o
        nome do arquivo (sem extensão) como nome do padrão.
-    2. Ler, de um desses arquivos, a lista de nomes de equipamentos (coluna
-       E da planilha), para popular automaticamente a lista de itens da
+    2. Ler, de um desses arquivos, a lista de equipamentos (coluna E) com a quantidade padrão de cada um (coluna C)
+    , para popular automaticamente a lista de itens da
        interface ao selecionar um cliente.
 
 Todas as comparações de texto feitas aqui (nome do padrão x nome da aba,
@@ -110,14 +110,32 @@ def _valor_e_numero_ou_vazio(valor) -> bool:
     except ValueError:
         return False
 
+def _formatar_quantidade(valor) -> str:
+    """
+    Converte o valor lido da coluna "QTD." no texto que será exibido na
+    interface e escrito na ficha:
+    - célula vazia -> "" (quantidade em branco, o usuário preenche depois);
+    - número inteiro -> sem casas decimais (o Excel devolve 2.0; exibimos "2");
+    - demais casos -> o próprio texto, sem espaços nas pontas.
+    """
+    if valor is None:
+        return ""
+    if isinstance(valor, (int, float)):
+        # Evita exibir "2.0" quando a quantidade é um número inteiro.
+        if float(valor).is_integer():
+            return str(int(valor))
+        return str(valor)
+    return str(valor).strip()
+
 
 def carregar_itens_do_padrao(nome_padrao: str) -> list:
     """
-    Lê modelos_x_cliente/<nome_padrao>.xlsx e retorna a lista de nomes de
-    equipamentos encontrados na coluna E, na ordem em que aparecem na
-    planilha. A leitura é interrompida assim que uma linha de observação
-    final é encontrada (identificada por trazer texto, em vez de número ou
-    vazio, na coluna "QTD.").
+    Lê modelos_x_cliente/<nome_padrao>.xlsx e retorna a lista de itens do
+    padrão, na ordem em que aparecem na planilha. Cada item é um dicionário:
+        {"equipamento": nome (coluna E), "quantidade": quantidade padrão (coluna C)}
+    A leitura é interrompida assim que uma linha de observação final é
+    encontrada (identificada por trazer texto, em vez de número ou vazio,
+    na coluna "QTD.").
     """
     caminho_arquivo = os.path.join(PASTA_MODELOS_CLIENTE, f"{nome_padrao}.xlsx")
     if not os.path.exists(caminho_arquivo):
@@ -141,7 +159,7 @@ def carregar_itens_do_padrao(nome_padrao: str) -> list:
             f'na planilha do padrão "{nome_padrao}".'
         )
 
-    nomes_equipamentos = []
+    itens = []
     for linha in aba.iter_rows(min_row=linha_cabecalho + 1, max_row=aba.max_row):
         valor_quantidade = linha[COLUNA_QUANTIDADE - 1].value
         valor_item = linha[COLUNA_ITEM - 1].value
@@ -152,6 +170,11 @@ def carregar_itens_do_padrao(nome_padrao: str) -> list:
             break
 
         if valor_item not in (None, ""):
-            nomes_equipamentos.append(str(valor_item).strip())
+            # Guarda o nome do equipamento junto com a quantidade padrão
+            # definida na planilha do cliente para aquele item.
+            itens.append({
+                "equipamento": str(valor_item).strip(),
+                "quantidade": _formatar_quantidade(valor_quantidade),
+            })
 
-    return nomes_equipamentos
+    return itens

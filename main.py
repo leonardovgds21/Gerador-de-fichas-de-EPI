@@ -280,9 +280,9 @@ class GeradorFichaEPI:
         Chamado automaticamente quando o usuário escolhe um cliente no
         combobox "Padrão Admissão": lê a planilha do cliente correspondente
         (dentro de modelos_x_cliente) e monta a lista de itens com os
-        equipamentos encontrados lá, deixando Tamanho e Quantidade em
-        branco — o usuário preenche esses dois campos depois, usando o
-        botão "Editar" de cada linha.
+        equipamentos encontrados lá,         equipamentos encontrados lá, já com a Quantidade padrão de cada
+        item. O Tamanho fica em branco, e a Quantidade pode ser alterada
+        depois, usando o botão "Editar" de cada linha.
 
         Se já existirem itens na lista, pede confirmação antes de
         substituí-los, já que essa ação troca a lista inteira.
@@ -301,13 +301,14 @@ class GeradorFichaEPI:
                 return
 
         try:
-            nomes_equipamentos = carregar_itens_do_padrao(nome_padrao)
+            itens_padrao = carregar_itens_do_padrao(nome_padrao)
         except Exception as erro:
             messagebox.showerror("Erro ao carregar padrão de admissão", str(erro))
             return
 
         novos_itens = []
-        for nome_bruto in nomes_equipamentos:
+        for item_padrao in itens_padrao:
+            nome_bruto = item_padrao["equipamento"]
             # Busca o CA na base de equipamentos.xlsx ignorando maiúsculas/
             # minúsculas e acentos. Quando encontra, usa o nome "oficial" (o
             # mesmo cadastrado em equipamentos.xlsx) para manter consistência
@@ -319,14 +320,16 @@ class GeradorFichaEPI:
             novos_itens.append({
                 "equipamento": nome_oficial,
                 "tamanho": "",
-                "quantidade": "",
+                # Quantidade padrão vinda da planilha do cliente; o usuário
+                # só altera (botão "Editar") se precisar de outro valor.
+                "quantidade": item_padrao["quantidade"],
                 "ca": ca,
             })
 
         self.lista_itens = novos_itens
         self._cancelar_edicao()  # garante que nenhuma edição antiga fique pendente
         self._atualizar_lista_na_tela()
-
+        
     def _iniciar_edicao(self, indice: int):
         """Chamado ao clicar em 'Editar' em uma linha: carrega os dados do
         item nos campos do corpo para que o usuário possa alterá-los."""
